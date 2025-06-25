@@ -52,7 +52,7 @@ if name_input:
     query = f"{name} site:transfermarkt.com"
     headers = {"User-Agent": "Mozilla/5.0"}
 
-    # Google search fallback via serpapi (free tier or demo only)
+    # Google search fallback
     search_url = f"https://www.google.com/search?q={query}"
     res = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(res.text, "html.parser")
@@ -61,7 +61,7 @@ if name_input:
     for link in soup.find_all("a", href=True):
         href = link['href']
         if "url?q=https://www.transfermarkt.com" in href and "/profil/spieler/" in href:
-            match = re.search(r"url\?q=(https://www.transfermarkt.com[^"]+)&", href)
+            match = re.search(r"url\?q=(https://www\.transfermarkt\.com[^&]+)&", href)
             if match:
                 player_link = match.group(1)
                 break
@@ -82,7 +82,7 @@ if name_input:
         for link in fbref_soup.find_all("a", href=True):
             href = link['href']
             if "url?q=https://fbref.com" in href and "/en/players/" in href:
-                match = re.search(r"url\?q=(https://fbref.com[^"]+)&", href)
+                match = re.search(r"url\?q=(https://fbref\.com[^&]+)&", href)
                 if match:
                     fbref_link = match.group(1)
                     break
