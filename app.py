@@ -63,7 +63,9 @@ if name_input:
         if "/l/?uddg=" in href and "transfermarkt.com" in href:
             match = re.search(r"/l/\?uddg=(https%3A%2F%2Fwww\.transfermarkt\.com[^"]+)", href)
             if match:
-                player_link = urllib.parse.unquote(match.group(1))
+                encoded_url = match.group(1)
+                decoded_url = urllib.parse.unquote(encoded_url)
+                player_link = decoded_url
                 break
 
     if player_link:
