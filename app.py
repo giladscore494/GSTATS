@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import re
+import urllib.parse
 
 st.set_page_config(page_title="GiladScore", layout="centered")
 
@@ -43,10 +44,12 @@ st.markdown("""
 <div class="title">GiladScore ⭐ מדד שחקני כדורגל</div>
 """, unsafe_allow_html=True)
 
-name = st.text_input("הכנס שם של שחקן (באנגלית)")
+name_input = st.text_input("הכנס שם של שחקן (באנגלית או בעברית)")
 
-if name:
-    query = f"{name} site:transfermarkt.com"
+if name_input:
+    name = name_input.strip().lower()
+    name_encoded = urllib.parse.quote(name)
+    query = f"{name_encoded} site:transfermarkt.com"
     headers = {"User-Agent": "Mozilla/5.0"}
     res = requests.get(f"https://html.duckduckgo.com/html/?q={query}", headers=headers)
 
@@ -67,7 +70,7 @@ if name:
         value = value_span.text.strip() if value_span else "לא נמצא"
 
         # FBref - סטטיסטיקות בסיסיות
-        fbref_query = f"{name} site:fbref.com"
+        fbref_query = f"{name_encoded} site:fbref.com"
         fbref_res = requests.get(f"https://html.duckduckgo.com/html/?q={fbref_query}", headers=headers)
         fbref_soup = BeautifulSoup(fbref_res.text, "html.parser")
         fbref_link = None
@@ -82,7 +85,7 @@ if name:
 
         st.markdown(f"""
         <div class="box">
-            <h3>🌟 {name}</h3>
+            <h3>🌟 {name_input.title()}</h3>
             <p><strong>שווי שוק:</strong> {value}</p>
             <p><strong>סטטיסטיקות:</strong> {stats}</p>
             <p class="credit">מקורות: <a href="{tm_url}" target="_blank">Transfermarkt</a>, FBref</p>
