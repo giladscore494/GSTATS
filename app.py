@@ -52,19 +52,17 @@ if name_input:
     query = f"{name} site:transfermarkt.com"
     headers = {"User-Agent": "Mozilla/5.0"}
 
-    # Google search fallback
-    search_url = f"https://www.google.com/search?q={query}"
+    # DuckDuckGo search for Transfermarkt
+    search_url = f"https://html.duckduckgo.com/html/?q={query}"
     res = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(res.text, "html.parser")
     player_link = None
 
     for link in soup.find_all("a", href=True):
         href = link['href']
-        if "url?q=https://www.transfermarkt.com" in href and "/profil/spieler/" in href:
-            match = re.search(r"url\?q=(https://www\.transfermarkt\.com[^&]+)&", href)
-            if match:
-                player_link = match.group(1)
-                break
+        if "/profil/spieler/" in href:
+            player_link = "https://www.transfermarkt.com" + href
+            break
 
     if player_link:
         tm_url = player_link
@@ -73,7 +71,7 @@ if name_input:
         value_span = tm_soup.find("div", class_=re.compile("marktwert"))
         value = value_span.text.strip() if value_span else "לא נמצא"
 
-        # FBref - סטטיסטיקות בסיסיות
+        # FBref - סטטיסטיקות בסיסיות (Google fallback)
         fbref_query = f"{name} site:fbref.com"
         fbref_search_url = f"https://www.google.com/search?q={fbref_query}"
         fbref_res = requests.get(fbref_search_url, headers=headers)
