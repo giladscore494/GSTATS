@@ -51,7 +51,7 @@ if name_input:
     query = f"{name} site:transfermarkt.com"
     headers = {"User-Agent": "Mozilla/5.0"}
 
-    # חיפוש שחקן ב־DuckDuckGo
+    # DuckDuckGo search for Transfermarkt
     search_url = f"https://html.duckduckgo.com/html/?q={query}"
     res = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(res.text, "html.parser")
@@ -59,13 +59,12 @@ if name_input:
 
     for link in soup.find_all("a", href=True):
         href = link['href']
-        if "/l/?uddg=" in href and "transfermarkt.com" in href:
-            match = re.search(r"/l/\?uddg=(https%3A%2F%2Fwww\.transfermarkt\.com[^\"]+)", href)
-            if match:
-                encoded_url = match.group(1)
-                decoded_url = urllib.parse.unquote(encoded_url)
-                player_link = decoded_url
-                break
+        if "transfermarkt.com" in href and "/profil/spieler/" in href:
+            if href.startswith("http"):
+                player_link = href
+            else:
+                player_link = "https://www.transfermarkt.com" + href
+            break
 
     if player_link:
         tm_url = player_link
@@ -74,7 +73,7 @@ if name_input:
         value_span = tm_soup.find("div", class_=re.compile("marktwert"))
         value = value_span.text.strip() if value_span else "לא נמצא"
 
-        # סטטיסטיקות מ־FBref (חיפוש מגוגל)
+        # FBref - סטטיסטיקות בסיסיות (Google fallback)
         fbref_query = f"{name} site:fbref.com"
         fbref_search_url = f"https://www.google.com/search?q={fbref_query}"
         fbref_res = requests.get(fbref_search_url, headers=headers)
@@ -83,7 +82,7 @@ if name_input:
         for link in fbref_soup.find_all("a", href=True):
             href = link['href']
             if "url?q=https://fbref.com" in href and "/en/players/" in href:
-                match = re.search(r"url\\?q=(https://fbref\\.com[^&]+)&", href)
+                match = re.search(r"url\?q=(https://fbref\.com[^&]+)&", href)
                 if match:
                     fbref_link = match.group(1)
                     break
