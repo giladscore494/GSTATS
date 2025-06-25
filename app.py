@@ -1,4 +1,4 @@
-iimport streamlit as st
+import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -51,7 +51,7 @@ if name_input:
     query = f"{name} site:transfermarkt.com"
     headers = {"User-Agent": "Mozilla/5.0"}
 
-    # DuckDuckGo search for Transfermarkt
+    # חיפוש שחקן ב־DuckDuckGo
     search_url = f"https://html.duckduckgo.com/html/?q={query}"
     res = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(res.text, "html.parser")
@@ -74,7 +74,7 @@ if name_input:
         value_span = tm_soup.find("div", class_=re.compile("marktwert"))
         value = value_span.text.strip() if value_span else "לא נמצא"
 
-        # FBref - סטטיסטיקות בסיסיות (Google fallback)
+        # סטטיסטיקות מ־FBref (חיפוש מגוגל)
         fbref_query = f"{name} site:fbref.com"
         fbref_search_url = f"https://www.google.com/search?q={fbref_query}"
         fbref_res = requests.get(fbref_search_url, headers=headers)
