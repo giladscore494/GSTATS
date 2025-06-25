@@ -60,9 +60,11 @@ if name_input:
 
     for link in soup.find_all("a", href=True):
         href = link['href']
-        if "/profil/spieler/" in href:
-            player_link = "https://www.transfermarkt.com" + href
-            break
+        if "/l/?uddg=" in href and "transfermarkt.com" in href:
+            match = re.search(r"/l/\?uddg=(https%3A%2F%2Fwww\.transfermarkt\.com[^"]+)", href)
+            if match:
+                player_link = urllib.parse.unquote(match.group(1))
+                break
 
     if player_link:
         tm_url = player_link
@@ -105,3 +107,4 @@ st.markdown("""
     כל הנתונים נלקחו ממקורות פומביות בשישול הוגן. שווי שוק נלקח מאתר Transfermarkt. הסטטיסטיקות נשלפו מ-FBref. השימוש היא לצורך הדמה והחנה בלבד.
 </div>
 """, unsafe_allow_html=True)
+
